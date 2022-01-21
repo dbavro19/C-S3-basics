@@ -39,34 +39,62 @@ var objectName = "testobject";
 var objectBody = "Hello World";
 var getBody = "";
 
+bool bucketExists = false;
+
 
 //List all Buckets
 
 Console.WriteLine("\nGetting a list of your buckets...");
-var listResponse = await s3Client.ListBucketsAsync();
-Console.WriteLine($"Number of buckets: {listResponse.Buckets.Count}");
-foreach (S3Bucket b in listResponse.Buckets)
-{
-    Console.WriteLine(b.BucketName);
-}
-Console.WriteLine($"Result: {listResponse.HttpStatusCode.ToString()}");
-
-
-Console.WriteLine("");
-
-Console.WriteLine("Creating bucket with provided info");
-//Create Bucket
 
 try
 {
-    Console.WriteLine($"\nCreating bucket {bucketName}...");
-    var createResponse = await s3Client.PutBucketAsync(bucketName);
-    Console.WriteLine($"Result: {createResponse.HttpStatusCode.ToString()}");
+    var listResponse = await s3Client.ListBucketsAsync();
+    Console.WriteLine($"Number of buckets: {listResponse.Buckets.Count}");
+    foreach (S3Bucket b in listResponse.Buckets)
+    {
+        Console.WriteLine(b.BucketName);
+        if (b.BucketName == bucketName)
+        {
+            bucketExists = true;
+        }
+    }
+    Console.WriteLine($"Result: {listResponse.HttpStatusCode.ToString()}");
 }
 catch (Exception e)
 {
     Console.WriteLine("Caught exception when creating a bucket:");
     Console.WriteLine(e.Message);
+}
+
+
+
+Console.WriteLine("");
+
+Console.WriteLine("Does Provided Bucket Exist?");
+Console.WriteLine(bucketExists);
+//Create Bucket
+
+//check if bucket exisits 
+
+if (bucketExists==false)
+
+{
+
+    try
+    {
+        Console.WriteLine($"\nCreating bucket {bucketName}...");
+        var createResponse = await s3Client.PutBucketAsync(bucketName);
+        Console.WriteLine($"Result: {createResponse.HttpStatusCode.ToString()}");
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine("Caught exception when creating a bucket:");
+        Console.WriteLine(e.Message);
+    }
+}
+else if(bucketExists == true)
+{
+    Console.WriteLine("Skipping Bucket Create:");
 }
 
 
